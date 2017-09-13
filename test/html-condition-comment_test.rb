@@ -1,8 +1,8 @@
 require 'test_helper'
 
-class Html::Conditional::CommentTest < Minitest::Test
+class HtmlConditionalCommentTest < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::Html::Conditional::Comment::VERSION
+    refute_nil ::HtmlConditionalComment::VERSION
   end
 
   def test_it_does_something_useful
