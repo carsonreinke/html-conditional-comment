@@ -1,5 +1,5 @@
-require "html-conditional-comment/version"
+require 'html-conditional-comment/version'
+require 'html-conditional-comment/lexer'
 
 module HtmlConditionalComment
-  # Your code goes here...
 end
