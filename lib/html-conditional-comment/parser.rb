@@ -4,6 +4,8 @@ module HtmlConditionalComment
   #
   # Pseudo grammar
   #
+  #template = { html | statement }
+  #statement = "<!" , [ "--" ] , "if" , expression , "]" , [ "--" ] , ">" , html , "<!" , [ "--" ] , "endif" , "]" , [ "--" ] , ">"
   #expression = term [ "|" , term ]
   #term = factor [ "&" , factor ]
   #factor = subexpression | "!" , factor | "(" , expression , ")"
@@ -16,82 +18,19 @@ module HtmlConditionalComment
     def initialize(tokens)
       @symbol = nil
       @tokens = tokens
+      @max_pos = tokens.size()
       @pos = -1
     end
 
+    def parse()
+      self.next()
 
-<<-COMMENT
-
-Item	Example	Comment
-!	[if !IE]	The NOT operator. This is placed immediately in front of the feature, operator, or subexpression to reverse the Boolean meaning of the expression.
-lt	[if lt IE 5.5]	The less-than operator. Returns true if the first argument is less than the second argument.
-lte	[if lte IE 6]	The less-than or equal operator. Returns true if the first argument is less than or equal to the second argument.
-gt	[if gt IE 5]	The greater-than operator. Returns true if the first argument is greater than the second argument.
-gte	[if gte IE 7]	The greater-than or equal operator. Returns true if the first argument is greater than or equal to the second argument.
-( )	[if !(IE 7)]	Subexpression operators. Used in conjunction with boolean operators to create more complex expressions.
-&	[if (gt IE 5)&(lt IE 7)]	The AND operator. Returns true if all subexpressions evaluate to true
-|	[if (IE 6)|(IE 7)]	The OR operator. Returns true if any of the subexpressions evaluates to true.
-
-<expression>::=<term>{<or><term>}
-<term>::=<factor>{<and><factor>}
-<factor>::=<constant>|<not><factor>|(<expression>)
-<constant>::= false|true
-<or>::='|'
-<and>::='&'
-<not>::='!'
-
-public BooleanExpression build() {
-  expression();
-  return root;
-}
-private void expression() {
-  term();
-  while (symbol == Lexer.OR) {
-    Or or = new Or();
-    or.setLeft(root);
-    term();
-    or.setRight(root);
-    root = or;
-  }
-}
-private void term() {
-  factor();
-  while (symbol == Lexer.AND) {
-    And and = new And();
-    and.setLeft(root);
-    factor();
-    and.setRight(root);
-    root = and;
-  }
-}
-private void factor() {
-  symbol = lexer.nextSymbol();
-  if (symbol == Lexer.TRUE) {
-    root = t;
-    symbol = lexer.nextSymbol();
-  } else if (symbol == Lexer.FALSE) {
-    root = f;
-    symbol = lexer.nextSymbol();
-  } else if (symbol == Lexer.NOT) {
-    Not not = new Not();
-    factor();
-    not.setChild(root);
-    root = not;
-  } else if (symbol == Lexer.LEFT) {
-    expression();
-    symbol = lexer.nextSymbol(); // we don't care about ')'
-  } else {
-    throw new RuntimeException("Expression Malformed");
-  }
-}
-
-http://www.craftinginterpreters.com/parsing-expressions.html
-https://unnikked.ga/how-to-build-a-boolean-expression-evaluator-518e9e068a65
-COMMENT
+      template()
+    end
 
 
-
-
+protected
+    #Browser is combination of feature and optional version
     def browser()
       node = Nodes::Browser.new()
       node.feature = @value
@@ -105,17 +44,18 @@ COMMENT
       node
     end
 
+    #True or false
     def boolean()
       if accept(:boolean_true)
         Nodes::True.instance()
       elsif accept(:boolean_false)
         Nodes::False.instance()
       else
-        #TODO
-        raise 'Syntax error'
+        error()
       end
     end
 
+    #Comparison operators
     def operator()
       if accept(:operator_less_than)
         Nodes::LessThan.new()
@@ -126,11 +66,11 @@ COMMENT
       elsif accept(:operator_greater_than_equal)
         Nodes::GreaterThanEqual.new()
       else
-        #TODO
-        raise 'Syntax error'
+        error()
       end
     end
 
+    #Either a comparison with the browser, boolean, or simply just the browser
     def subexpression()
       node = nil
 
@@ -142,6 +82,7 @@ COMMENT
       elsif current(:boolean_true) || current(:boolean_false)
         node = boolean()
       else
+        #No comparison operator is assuming equals
         node = Nodes::Equal.new()
         node.child = browser()
       end
@@ -149,11 +90,13 @@ COMMENT
       node
     end
 
+    #Negated self or paranthesised expression
     def factor()
       node = nil
 
       if accept(:operator_not)
-        node = factor()
+        node = Nodes::Not.new()
+        node.child = factor()
       elsif accept(:paren_open)
         node = expression()
         expect(:paren_close)
@@ -164,6 +107,7 @@ COMMENT
       node
     end
 
+    #And
     def term()
       node = factor()
       while accept(:operator_and)
@@ -176,6 +120,7 @@ COMMENT
       node
     end
 
+    #Or
     def expression()
       node = term()
       while accept(:operator_or)
@@ -188,7 +133,7 @@ COMMENT
       node
     end
 
-    def statement()
+    def condition()
       node = Nodes::Condition.new()
 
       expect(:open)
@@ -221,25 +166,18 @@ COMMENT
         nodes << if current(:html)
           html()
         elsif current(:open)
-          statement()
+          condition()
         else
-          raise 'Syntax error' #TODO
+          error()
         end
       end
 
       nodes
     end
 
-    def parse()
-      self.next()
-
-      #TODO Create AST tree based on parsing using recursive descent
-      #https://ruslanspivak.com/lsbasi-part7/
-      template()
-    end
-
 
 protected
+    #Accept the symbol and move on or not
     def accept(symbol)
       if(symbol == @symbol)
         self.next()
@@ -249,9 +187,9 @@ protected
       end
     end
 
+    #Expect a current symbol or raise
     def expect(symbol)
-      #TODO
-      raise "Unexpected symbol: #{@value}" unless accept(symbol)
+      raise HtmlConditionalComment::ParserError.new("Expected #{symbol} received #{@symbol} at \"#{@value}\"") unless accept(symbol)
     end
 
     def current(symbol)
@@ -260,11 +198,15 @@ protected
 
     def next()
       @pos += 1
-      #TODO Out of bounds
+      #raise HtmlConditionalComment::ParserError.new('EOF') if @pos >= @max_pos
       token = @tokens[@pos] || []
       @symbol = token[0]
       @value = token[1]
       token
+    end
+
+    def error()
+      raise HtmlConditionalComment::ParserError.new("Syntax error at \"#{@value}\"")
     end
   end
 end

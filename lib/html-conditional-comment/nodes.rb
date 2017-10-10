@@ -1,25 +1,32 @@
 require 'singleton'
+require 'delegate'
 
 module HtmlConditionalComment
   module Nodes
-    class Node
+    module Node
       def accept(visitor)
         visitor.visit(self)
       end
     end
 
+    class NodeItem
+      include Node
+    end
+
     class Nodes < Array
+      include Node
+
       def accept(visitor)
         self.each do |node|
-          visitor.visit(node)
+          node.accept(visitor)
         end
       end
     end
 
-    class ChildOperator < Node
+    class ChildOperator < NodeItem
       attr_accessor :child
     end
-    class BranchOperator < Node
+    class BranchOperator < NodeItem
       attr_accessor :left, :right
     end
     class Comparison < ChildOperator; end
@@ -36,19 +43,19 @@ module HtmlConditionalComment
     class GreaterThan < Comparison; end
     class GreaterThanEqual < Comparison; end
 
-    class Browser < Node
+    class Browser < NodeItem
       attr_accessor :feature, :feature_version
     end
 
-    class True < Node
+    class True < NodeItem
       include Singleton
     end
 
-    class False < Node
+    class False < NodeItem
       include Singleton
     end
 
-    class Html < Node
+    class Html < NodeItem
       attr_accessor :string
     end
   end
