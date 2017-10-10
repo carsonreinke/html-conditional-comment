@@ -5,7 +5,7 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
     tokens =
       HtmlConditionalComment::Lexer.new('<!--[if true]> HTML <![endif]-->').
       tokenize()
-    assert_equal [[:open, "<!--["], [:if, "if"], [:boolean, "true"], [:close, "]>"], [:html, " HTML "], [:open, "<!["], [:endif, "endif"], [:close, "]-->"]],
+    assert_equal [[:open, "<!--["], [:if, "if"], [:boolean_true, "true"], [:close, "]>"], [:html, " HTML "], [:open, "<!["], [:endif, "endif"], [:close, "]-->"]],
       tokens
   end
 
@@ -13,7 +13,7 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
     tokens =
       HtmlConditionalComment::Lexer.new('<![if true]> HTML <![endif]>').
       tokenize()
-    assert_equal [[:open, "<!["], [:if, "if"], [:boolean, "true"], [:close, "]>"], [:html, " HTML "], [:open, "<!["], [:endif, "endif"], [:close, "]>"]],
+    assert_equal [[:open, "<!["], [:if, "if"], [:boolean_true, "true"], [:close, "]>"], [:html, " HTML "], [:open, "<!["], [:endif, "endif"], [:close, "]>"]],
       tokens
   end
 
@@ -45,7 +45,7 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
     tokens =
       HtmlConditionalComment::Lexer.new('<!--[if (gte IE 5.5)|(gt IE 6)&!(lt IE 7)]><![endif]-->').
       tokenize()
-    assert_equal [[:open, "<!--["], [:if, "if"], [:paren, "("], [:operator, "gt"], [:feature, "e"], [:feature, "IE"], [:feature_version, "5.5"], [:paren, ")"], [:operator, "|"], [:paren, "("], [:operator, "gt"], [:feature, "IE"], [:feature_version, "6"], [:paren, ")"], [:operator, "&"], [:operator, "!"], [:paren, "("], [:operator, "lt"], [:feature, "IE"], [:feature_version, "7"], [:paren, ")"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]-->"]], tokens
+    assert_equal [[:open, "<!--["], [:if, "if"], [:paren_open, "("], [:operator_greater_than_equal, "gte"], [:feature, "IE"], [:feature_version, "5.5"], [:paren_close, ")"], [:operator_or, "|"], [:paren_open, "("], [:operator_greater_than, "gt"], [:feature, "IE"], [:feature_version, "6"], [:paren_close, ")"], [:operator_and, "&"], [:operator_not, "!"], [:paren_open, "("], [:operator_less_than, "lt"], [:feature, "IE"], [:feature_version, "7"], [:paren_close, ")"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]-->"]], tokens
   end
 
   def test_token_error

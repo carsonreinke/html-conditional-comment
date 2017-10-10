@@ -29,18 +29,20 @@ module HtmlConditionalComment
       [:if, IF_STATEMENT],
       [:endif, ENDIF_STATEMENT],
 
-      [:paren, OPEN_PAREN],
-      [:paren, CLOSE_PAREN],
-      [:operator, LESS_THAN],
-      [:operator, LESS_THAN_EQUAL],
-      [:operator, GREATER_THAN],
-      [:operator, GREATER_THAN_EQUAL],
-      [:operator, NOT],
-      [:operator, OR],
-      [:operator, AND],
+      [:paren_open, OPEN_PAREN],
+      [:paren_close, CLOSE_PAREN],
 
-      [:boolean, TRUE],
-      [:boolean, FALSE],
+      [:operator_less_than_equal, LESS_THAN_EQUAL],
+      [:operator_less_than, LESS_THAN],
+      [:operator_greater_than_equal, GREATER_THAN_EQUAL],
+      [:operator_greater_than, GREATER_THAN],
+
+      [:operator_not, NOT],
+      [:operator_or, OR],
+      [:operator_and, AND],
+
+      [:boolean_true, TRUE],
+      [:boolean_false, FALSE],
       [:feature, FEATURE],
       [:feature_version, FEATURE_VERSION]
     ]
