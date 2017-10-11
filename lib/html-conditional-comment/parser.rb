@@ -1,5 +1,9 @@
 module HtmlConditionalComment
-  class ParseError < StandardError; end
+  class ParseError < StandardError
+    def initialize(msg, example)
+      super("#{msg} at \"#{example.slice(0, 25)}\"")
+    end
+  end
 
   #
   # Pseudo grammar
@@ -37,7 +41,7 @@ protected
       expect(:feature)
 
       if current(:feature_version)
-        node.feature_version = @value
+        node.feature_version = @value.to_f()
         accept(:feature_version)
       end
 
@@ -189,7 +193,7 @@ protected
 
     #Expect a current symbol or raise
     def expect(symbol)
-      raise HtmlConditionalComment::ParserError.new("Expected #{symbol} received #{@symbol} at \"#{@value}\"") unless accept(symbol)
+      raise HtmlConditionalComment::ParseError.new("Expected #{symbol}, received #{@symbol}", @value) unless accept(symbol)
     end
 
     def current(symbol)
@@ -206,7 +210,7 @@ protected
     end
 
     def error()
-      raise HtmlConditionalComment::ParserError.new("Syntax error at \"#{@value}\"")
+      raise HtmlConditionalComment::ParseError.new("Syntax error", @value)
     end
   end
 end
