@@ -55,4 +55,11 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
         tokenize()
     end
   end
+
+  def test_ignores_cdata
+    tokens =
+      HtmlConditionalComment::Lexer.new('<![CDATA[Comment]]>').
+      tokenize()
+    assert_equal [[:html, "<![CDATA[Comment]]>"]], tokens
+  end
 end

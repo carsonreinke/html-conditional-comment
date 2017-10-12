@@ -19,8 +19,10 @@ module HtmlConditionalComment
     FALSE = /false/i
     IF_STATEMENT = /if/i
     ENDIF_STATEMENT = /endif/i
-    OPEN = /(<!)?(\-\-)?\[/
-    CLOSE = /\](\-\-)?>?/
+    #Opening statement plus positive look ahead to avoid conflicts with other
+    #comments
+    OPEN = /<!(\-\-)?\[(?=(end)?if)/
+    CLOSE = /\](\-\-)?>/
     WHITE_SPACE = /\s+/
     FEATURE = /[a-z]+/i
     FEATURE_VERSION = /\d+(\.[\d]+)?/
