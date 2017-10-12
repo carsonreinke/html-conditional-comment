@@ -15,12 +15,6 @@ module HtmlConditionalComment
 
     class Nodes < Array
       include Node
-
-      def accept(visitor)
-        self.each do |node|
-          node.accept(visitor)
-        end
-      end
     end
 
     class ChildOperator < NodeItem
@@ -30,8 +24,8 @@ module HtmlConditionalComment
       attr_accessor :left, :right
     end
     class Comparison < ChildOperator; end
-
     class Condition < BranchOperator; end
+
 
     class Or < BranchOperator; end
     class And < BranchOperator; end
