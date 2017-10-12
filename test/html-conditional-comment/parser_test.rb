@@ -9,7 +9,7 @@ class HtmlConditionalComment::ParserTest < Minitest::Test
     assert_kind_of HtmlConditionalComment::Nodes::Condition, node
     assert_kind_of HtmlConditionalComment::Nodes::True, node.left
     assert_kind_of HtmlConditionalComment::Nodes::Html, node.right
-    assert_equal " HTML ", node.right.string
+    assert_equal " HTML ", node.right.content
   end
 
   def test_parens

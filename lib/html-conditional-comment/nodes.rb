@@ -40,17 +40,15 @@ module HtmlConditionalComment
     class Browser < NodeItem
       attr_accessor :feature, :feature_version
     end
-
     class True < NodeItem
       include Singleton
     end
-
     class False < NodeItem
       include Singleton
     end
 
     class Html < NodeItem
-      attr_accessor :string
+      attr_accessor :content
     end
   end
 end

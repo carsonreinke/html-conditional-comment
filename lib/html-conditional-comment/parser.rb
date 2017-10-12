@@ -158,7 +158,7 @@ protected
 
     def html()
       node = Nodes::Html.new()
-      node.string = @value
+      node.content = @value
       expect(:html)
       node
     end
