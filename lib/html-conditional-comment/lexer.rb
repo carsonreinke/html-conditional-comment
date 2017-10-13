@@ -5,6 +5,10 @@ module HtmlConditionalComment
     end
   end
 
+  ##
+  # Converts string into array of tokens.  Token is an array, first element is
+  # symbol representing the token, second element is string value.
+  #
   class Lexer
     LESS_THAN = /lt/i
     LESS_THAN_EQUAL = /lte/i

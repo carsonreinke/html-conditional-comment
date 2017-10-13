@@ -34,8 +34,8 @@ module HtmlConditionalComment
       end
     end
 
-    #
-    # Evaluates condition to boolean
+    ##
+    # Evaluates conditions to boolean
     #
     class Eval < Visitor
     protected
@@ -76,7 +76,7 @@ module HtmlConditionalComment
       end
     end
 
-    #
+    ##
     # Converts parser nodes to a string by evaluating each conditional comment
     #
     class ToString < Visitor

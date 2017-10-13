@@ -5,6 +5,9 @@ module HtmlConditionalComment
     end
   end
 
+  ##
+  #
+  # Parse tokens into a tree of nodes
   #
   # Pseudo grammar
   #
@@ -173,14 +176,11 @@ protected
     def template()
       nodes = Nodes::Nodes.new()
 
-      #while !@symbol.nil?()
       while current(:html) || (current(:open) && peek(:if))
         nodes << if current(:html)
           html()
         elsif current(:open) && peek(:if)
           condition()
-        #else
-        #  error()
         end
       end
 
