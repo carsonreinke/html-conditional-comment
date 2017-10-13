@@ -38,7 +38,7 @@ module HtmlConditionalComment
     class GreaterThanEqual < Comparison; end
 
     class Browser < NodeItem
-      attr_accessor :feature, :feature_version
+      attr_accessor :feature, :version_vector
     end
     class True < NodeItem
       include Singleton

@@ -25,7 +25,7 @@ module HtmlConditionalComment
     CLOSE = /\](\-\-)?>/
     WHITE_SPACE = /\s+/
     FEATURE = /[a-z]+/i
-    FEATURE_VERSION = /\d+(\.[\d]+)?/
+    VERSION_VECTOR = /\d+(\.[\d]+)?/
 
     TOKENS = [
       [:if, IF_STATEMENT],
@@ -46,7 +46,7 @@ module HtmlConditionalComment
       [:boolean_true, TRUE],
       [:boolean_false, FALSE],
       [:feature, FEATURE],
-      [:feature_version, FEATURE_VERSION]
+      [:version_vector, VERSION_VECTOR]
     ]
 
     def initialize(html_or_comment)

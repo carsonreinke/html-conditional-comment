@@ -11,7 +11,11 @@ module HtmlConditionalComment
         @features = features
         @features = [@features] unless @features.is_a?(Enumerable)
 
-        @version = version.to_f()
+        @version = if version.is_a?(VersionVector)
+          version
+        else
+          VersionVector.new(version)
+        end
       end
 
       #Copied from https://blog.bigbinary.com/2013/07/07/visitor-pattern-and-double-dispatch.html
@@ -46,19 +50,19 @@ module HtmlConditionalComment
       end
 
       def visit_HtmlConditionalComment_Nodes_Equal(subject)
-        subject.child.accept(self) && subject.child.feature_version.nil?() ? true : @version == subject.child.feature_version
+        subject.child.accept(self) && @version == subject.child.version_vector
       end
       def visit_HtmlConditionalComment_Nodes_LessThan(subject)
-        subject.child.accept(self) && subject.child.feature_version.nil?() ? true : @version < subject.child.feature_version
+        subject.child.accept(self) && @version < subject.child.version_vector
       end
       def visit_HtmlConditionalComment_Nodes_LessThanEqual(subject)
-        subject.child.accept(self) && subject.child.feature_version.nil?() ? true : @version <= subject.child.feature_version
+        subject.child.accept(self) && @version <= subject.child.version_vector
       end
       def visit_HtmlConditionalComment_Nodes_GreaterThan(subject)
-        subject.child.accept(self) && subject.child.feature_version.nil?() ? true : @version > subject.child.feature_version
+        subject.child.accept(self) && @version > subject.child.version_vector
       end
       def visit_HtmlConditionalComment_Nodes_GreaterThanEqual(subject)
-        subject.child.accept(self) && subject.child.feature_version.nil?() ? true : @version >= subject.child.feature_version
+        subject.child.accept(self) && @version >= subject.child.version_vector
       end
 
       def visit_HtmlConditionalComment_Nodes_Or(subject)

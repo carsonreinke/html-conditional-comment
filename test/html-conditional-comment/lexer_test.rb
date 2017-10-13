@@ -38,14 +38,14 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
       HtmlConditionalComment::Lexer.new('<!--[if IE 6]><![endif]-->').
       tokenize()
     assert_equal [:feature, 'IE'], tokens[2]
-    assert_equal [:feature_version, '6'], tokens[3]
+    assert_equal [:version_vector, '6'], tokens[3]
   end
 
   def test_tokenize_complex
     tokens =
       HtmlConditionalComment::Lexer.new('<!--[if (gte IE 5.5)|(gt IE 6)&!(lt IE 7)]><![endif]-->').
       tokenize()
-    assert_equal [[:open, "<!--["], [:if, "if"], [:paren_open, "("], [:operator_greater_than_equal, "gte"], [:feature, "IE"], [:feature_version, "5.5"], [:paren_close, ")"], [:operator_or, "|"], [:paren_open, "("], [:operator_greater_than, "gt"], [:feature, "IE"], [:feature_version, "6"], [:paren_close, ")"], [:operator_and, "&"], [:operator_not, "!"], [:paren_open, "("], [:operator_less_than, "lt"], [:feature, "IE"], [:feature_version, "7"], [:paren_close, ")"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]-->"]], tokens
+    assert_equal [[:open, "<!--["], [:if, "if"], [:paren_open, "("], [:operator_greater_than_equal, "gte"], [:feature, "IE"], [:version_vector, "5.5"], [:paren_close, ")"], [:operator_or, "|"], [:paren_open, "("], [:operator_greater_than, "gt"], [:feature, "IE"], [:version_vector, "6"], [:paren_close, ")"], [:operator_and, "&"], [:operator_not, "!"], [:paren_open, "("], [:operator_less_than, "lt"], [:feature, "IE"], [:version_vector, "7"], [:paren_close, ")"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]-->"]], tokens
   end
 
   def test_token_error

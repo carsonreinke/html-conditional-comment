@@ -8,8 +8,9 @@ class HtmlConditionalComment::ParserTest < Minitest::Test
     node = nodes.first
     assert_kind_of HtmlConditionalComment::Nodes::Condition, node
     assert_kind_of HtmlConditionalComment::Nodes::True, node.left
-    assert_kind_of HtmlConditionalComment::Nodes::Html, node.right
-    assert_equal " HTML ", node.right.content
+    assert_kind_of HtmlConditionalComment::Nodes::Nodes, node.right
+    assert_kind_of HtmlConditionalComment::Nodes::Html, node.right.first
+    assert_equal " HTML ", node.right.first.content
   end
 
   def test_parens
@@ -30,16 +31,16 @@ class HtmlConditionalComment::ParserTest < Minitest::Test
     assert_equal "IE", node.child.feature
   end
 
-  def test_feature_version
-    tokens = [[:open, "<!["], [:if, "if"], [:feature, "IE"], [:feature_version, "5.5"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]>"]]
+  def test_version_vector
+    tokens = [[:open, "<!["], [:if, "if"], [:feature, "IE"], [:version_vector, "5.5"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]>"]]
     nodes = HtmlConditionalComment::Parser.new(tokens).parse()
     node = nodes.first.left
     assert_kind_of HtmlConditionalComment::Nodes::Equal, node
-    assert_equal 5.5, node.child.feature_version
+    assert_equal 5.5, node.child.version_vector
   end
 
   def test_comparison
-    tokens = [[:open, "<!["], [:if, "if"], [:operator_greater_than_equal, "gte"], [:feature, "IE"], [:feature_version, "5.5"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]>"]]
+    tokens = [[:open, "<!["], [:if, "if"], [:operator_greater_than_equal, "gte"], [:feature, "IE"], [:version_vector, "5.5"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]>"]]
     nodes = HtmlConditionalComment::Parser.new(tokens).parse()
     node = nodes.first.left
     assert_kind_of HtmlConditionalComment::Nodes::GreaterThanEqual, node
@@ -81,6 +82,25 @@ class HtmlConditionalComment::ParserTest < Minitest::Test
     node = nodes.first.left
     assert_kind_of HtmlConditionalComment::Nodes::Not, node
     assert_kind_of HtmlConditionalComment::Nodes::True, node.child
+  end
+
+  def test_nested
+    tokens = [
+      [:open, "<!["], [:if, "if"], [:boolean_true, "true"], [:close, "]>"],
+      [:open, "<!["], [:if, "if"], [:boolean_true, "true"], [:close, "]>"],
+      [:html, " HTML "],
+      [:open, "<!["], [:endif, "endif"], [:close, "]>"],
+      [:open, "<!["], [:endif, "endif"], [:close, "]>"]
+    ]
+    nodes = HtmlConditionalComment::Parser.new(tokens).parse()
+    assert_equal 1, nodes.size()
+    node = nodes.first
+    assert_kind_of HtmlConditionalComment::Nodes::Condition, node
+    assert_kind_of HtmlConditionalComment::Nodes::True, node.left
+    assert_kind_of HtmlConditionalComment::Nodes::Nodes, node.right
+    assert_kind_of HtmlConditionalComment::Nodes::Condition, node.right.first
+    assert_kind_of HtmlConditionalComment::Nodes::Nodes, node.right.first.right
+    assert_kind_of HtmlConditionalComment::Nodes::Html, node.right.first.right.first
   end
 
   def test_syntax_error

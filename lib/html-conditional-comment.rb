@@ -3,6 +3,7 @@ require 'html-conditional-comment/lexer'
 require 'html-conditional-comment/parser'
 require 'html-conditional-comment/nodes'
 require 'html-conditional-comment/visitor'
+require 'html-conditional-comment/version_vector'
 
 module HtmlConditionalComment
   class << self

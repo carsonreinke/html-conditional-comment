@@ -9,27 +9,32 @@ module HtmlConditionalComment
   # Pseudo grammar
   #
   #template = { html | statement }
-  #statement = "<!" , [ "--" ] , "if" , expression , "]" , [ "--" ] , ">" , html , "<!" , [ "--" ] , "endif" , "]" , [ "--" ] , ">"
+  #statement = "<!" , [ "--" ] , "if" , expression , "]" , [ "--" ] , ">" , template , "<!" , [ "--" ] , "endif" , "]" , [ "--" ] , ">"
   #expression = term [ "|" , term ]
   #term = factor [ "&" , factor ]
   #factor = subexpression | "!" , factor | "(" , expression , ")"
   #subexpression = [ operator ] browser | boolean
   #operator = "gt" | "gte" | "lt" | "lte"
   #boolean = "true" | "false"
-  #browser = feature [ feature_version ]
+  #browser = feature [ version_vector ]
   #
   class Parser
     def initialize(tokens)
       @symbol = nil
       @tokens = tokens
-      @max_pos = tokens.size()
+      @max_pos = tokens.size() - 1
       @pos = -1
     end
 
     def parse()
       self.next()
 
-      template()
+      nodes = template()
+
+      #Tokens left, syntax error
+      error() if @pos < @max_pos
+
+      nodes
     end
 
 
@@ -40,9 +45,11 @@ protected
       node.feature = @value
       expect(:feature)
 
-      if current(:feature_version)
-        node.feature_version = @value.to_f()
-        accept(:feature_version)
+      if current(:version_vector)
+        node.version_vector = VersionVector.new(@value)
+        accept(:version_vector)
+      else
+        node.version_vector = VersionVector.new(nil)
       end
 
       node
@@ -145,8 +152,8 @@ protected
       node.left = expression()
       expect(:close)
 
-      if current(:html)
-        node.right = html()
+      unless current(:open) && peek(:endif)
+        node.right = template()
       end
 
       expect(:open)
@@ -166,13 +173,14 @@ protected
     def template()
       nodes = Nodes::Nodes.new()
 
-      while !@symbol.nil?()
+      #while !@symbol.nil?()
+      while current(:html) || (current(:open) && peek(:if))
         nodes << if current(:html)
           html()
-        elsif current(:open)
+        elsif current(:open) && peek(:if)
           condition()
-        else
-          error()
+        #else
+        #  error()
         end
       end
 
@@ -198,6 +206,10 @@ protected
 
     def current(symbol)
       @symbol == symbol
+    end
+
+    def peek(symbol)
+      @tokens[@pos+1][0] == symbol
     end
 
     def next()

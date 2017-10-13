@@ -38,12 +38,55 @@ class HtmlConditionalComment::VisitorTest < Minitest::Test
     assert node.accept(visitor)
   end
 
-  def test_eval_feature_version
+  def test_eval_version_vector
     node = comparison(
       HtmlConditionalComment::Nodes::Equal,
-      browser('IE', 6.0)
+      browser('IE', HtmlConditionalComment::VersionVector.new('6'))
+    )
+    visitor = HtmlConditionalComment::Visitors::Eval.new('IE', 6.5)
+    assert node.accept(visitor)
+
+    visitor = HtmlConditionalComment::Visitors::Eval.new('IE', HtmlConditionalComment::VersionVector.new('6.5'))
+    assert node.accept(visitor)
+  end
+
+  def test_eval_less_than
+    node = comparison(
+      HtmlConditionalComment::Nodes::LessThan,
+      browser('IE', HtmlConditionalComment::VersionVector.new('7'))
+    )
+    visitor = HtmlConditionalComment::Visitors::Eval.new('IE', 6.5)
+    assert node.accept(visitor)
+  end
+
+  def test_eval_less_than_equal
+    node = comparison(
+      HtmlConditionalComment::Nodes::LessThanEqual,
+      browser('IE', HtmlConditionalComment::VersionVector.new('7'))
+    )
+    visitor = HtmlConditionalComment::Visitors::Eval.new('IE', 7.0)
+    assert node.accept(visitor)
+    visitor = HtmlConditionalComment::Visitors::Eval.new('IE', 6.0)
+    assert node.accept(visitor)
+  end
+
+  def test_eval_greater_than
+    node = comparison(
+      HtmlConditionalComment::Nodes::GreaterThan,
+      browser('IE', HtmlConditionalComment::VersionVector.new('6.5'))
+    )
+    visitor = HtmlConditionalComment::Visitors::Eval.new('IE', 7)
+    assert node.accept(visitor)
+  end
+
+  def test_eval_greater_than_equal
+    node = comparison(
+      HtmlConditionalComment::Nodes::GreaterThanEqual,
+      browser('IE', HtmlConditionalComment::VersionVector.new('6'))
     )
     visitor = HtmlConditionalComment::Visitors::Eval.new('IE', 6)
+    assert node.accept(visitor)
+    visitor = HtmlConditionalComment::Visitors::Eval.new('IE', 7)
     assert node.accept(visitor)
   end
 
@@ -101,10 +144,10 @@ protected
 
   alias :comparison :child
 
-  def browser(feature, feature_version = nil)
+  def browser(feature, version_vector = nil)
     node = HtmlConditionalComment::Nodes::Browser.new()
     node.feature = feature
-    node.feature_version = feature_version
+    node.version_vector = version_vector
     node
   end
 
