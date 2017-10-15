@@ -1,8 +1,10 @@
-# Html::Conditional::Comment
+# HTML Conditional Comment Evaluater, Parser, and Lexer
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/html/conditional/comment`. To experiment with that code, run `bin/console` for an interactive prompt.
+Evaluate, parse, and tokenizing HTML conditional comments using provided features and version.  Allows for existing HTML to be maintained and only conditional comments to evaluated.
 
-TODO: Delete this and the text above, and describe your gem
+## Why?
+
+Conditional comments are really a legacy approach, however the application is still quite prevelant in the email marketing industry.
 
 ## Installation
 
@@ -22,7 +24,12 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+* Evaluating:
+`HtmlConditionalComment.to_string("What is the <!--[if gte mso 9]>Outlook<![endif]-->?", "mso", 9) => "What is the Outlook?"`
+
+* Parsing: `HtmlConditionalComment.parse(...) => HtmlConditionalComment::Nodes::Nodes`
+
+* Tokenizing: `HtmlConditionalComment.lex(...) => [[:open, "<!--["], [:if, "if"]...`
 
 ## Development
 
@@ -32,10 +39,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/html-conditional-comment.
+Bug reports and pull requests are welcome on GitHub at https://github.com/carsonreinke/html-conditional-comment.
 
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
