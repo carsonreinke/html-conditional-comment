@@ -89,7 +89,7 @@ module HtmlConditionalComment
           #Scan till we find an open token, if not done and use the rest
           if match = @scanner.scan_until(OPEN)
             open = true
-            #TODO Gross way to get up till scan succes
+            #TODO Gross way to get up till scan has succeeded
             match = match.slice(0..-(@scanner.matched.size() + 1))
             tokens << [:html, match] unless match.empty?()
             tokens << [:open, @scanner.matched]
