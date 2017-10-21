@@ -25,7 +25,7 @@ module HtmlConditionalComment
       end
 
       #Provide method missing for better interpretation
-      def method_missing(method, args)
+      def method_missing(method, *args)
         if method.to_s() =~ /^visit\_(.+)/
           raise VisitError.new($1)
         else

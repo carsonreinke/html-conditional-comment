@@ -119,6 +119,17 @@ class HtmlConditionalComment::VisitorTest < Minitest::Test
     assert node.accept(visitor)
   end
 
+  def test_method_missing
+    nodes = nodes(condition(
+      HtmlConditionalComment::Nodes::True.instance,
+      html('Works')
+    ))
+    visitor = HtmlConditionalComment::Visitors::Visitor.new('IE', 6)
+    assert_raises HtmlConditionalComment::VisitError do
+      nodes.accept(visitor)
+    end
+  end
+
 
 protected
   def child(klass, child)
