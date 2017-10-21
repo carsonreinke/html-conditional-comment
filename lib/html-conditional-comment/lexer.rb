@@ -25,8 +25,8 @@ module HtmlConditionalComment
     ENDIF_STATEMENT = /endif/i
     #Opening statement plus positive look ahead to avoid conflicts with other
     #comments
-    OPEN = /<!(\-\-)?\[(?=(end)?if)/
-    CLOSE = /\](\-\-)?>/
+    OPEN = /<!(\-\-)?\s*\[(?=(end)?if)/
+    CLOSE = /\]\s*(\-\-)?>/
     WHITE_SPACE = /\s+/
     FEATURE = /[a-z]+/i
     VERSION_VECTOR = /\d+(\.[\d]+)?/

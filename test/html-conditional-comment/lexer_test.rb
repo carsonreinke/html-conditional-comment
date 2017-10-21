@@ -62,4 +62,11 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
       tokenize()
     assert_equal [[:html, "<![CDATA[Comment]]>"]], tokens
   end
+
+  def test_allows_space
+    tokens =
+      HtmlConditionalComment::Lexer.new('<!-- [if true] --><!--   [endif]    -->').
+      tokenize()
+    assert_equal [[:open, "<!-- ["], [:if, "if"], [:boolean_true, "true"], [:close, "] -->"], [:open, "<!--   ["], [:endif, "endif"], [:close, "]    -->"]], tokens
+  end
 end
