@@ -1,7 +1,7 @@
 module HtmlConditionalComment
   class TokenError < StandardError
     def initialize(rest)
-      super("Invalid token \"#{rest.slice(0, 25)}\"")
+      super("Invalid token \"#{rest.to_s.slice(0, 25)}\"")
     end
   end
 

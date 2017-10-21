@@ -1,7 +1,7 @@
 module HtmlConditionalComment
   class ParseError < StandardError
     def initialize(msg, example)
-      super("#{msg} at \"#{example.slice(0, 25)}\"")
+      super("#{msg} at \"#{example.to_s.slice(0, 25)}\"")
     end
   end
 
