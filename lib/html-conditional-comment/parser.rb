@@ -22,6 +22,9 @@ module HtmlConditionalComment
   #browser = feature [ version_vector ]
   #
   class Parser
+    OPEN = /\-\->$/
+    CLOSE = /<!\-\-$/
+
     def initialize(tokens)
       @symbol = nil
       @tokens = tokens
@@ -153,13 +156,23 @@ protected
       expect(:open)
       expect(:if)
       node.left = expression()
+
+      #TODO Goofy confirmation of non-closing HTML comment
+      if current(:close)
+        error() if @value =~ OPEN
+      end
       expect(:close)
 
       unless current(:open) && peek(:endif)
         node.right = template()
       end
 
+      #TODO More goofyness
+      if current(:open)
+        error() if @value =~ CLOSE
+      end
       expect(:open)
+
       expect(:endif)
       expect(:close)
 

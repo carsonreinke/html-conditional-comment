@@ -51,7 +51,7 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
   def test_token_error
     assert_raises HtmlConditionalComment::TokenError do
       tokens =
-        HtmlConditionalComment::Lexer.new('<!--[if IE < 5.5]--><![endif]-->').
+        HtmlConditionalComment::Lexer.new('<!--[if IE < 5.5]><![endif]-->').
         tokenize()
     end
   end
@@ -65,8 +65,15 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
 
   def test_allows_space
     tokens =
-      HtmlConditionalComment::Lexer.new('<!-- [if true] --><!--   [endif]    -->').
+      HtmlConditionalComment::Lexer.new('<!-- [if true] ><!   [endif]    -->').
       tokenize()
-    assert_equal [[:open, "<!-- ["], [:if, "if"], [:boolean_true, "true"], [:close, "] -->"], [:open, "<!--   ["], [:endif, "endif"], [:close, "]    -->"]], tokens
+    assert_equal [[:open, "<!-- ["], [:if, "if"], [:boolean_true, "true"], [:close, "] >"], [:open, "<!   ["], [:endif, "endif"], [:close, "]    -->"]], tokens
+  end
+
+  def test_allow_extra_comment
+    tokens =
+      HtmlConditionalComment::Lexer.new('<!--conditional [if true]><![endif]-->').
+      tokenize()
+    assert_equal [[:open, "<!--conditional ["], [:if, "if"], [:boolean_true, "true"], [:close, "]>"], [:open, "<!["], [:endif, "endif"], [:close, "]-->"]], tokens
   end
 end

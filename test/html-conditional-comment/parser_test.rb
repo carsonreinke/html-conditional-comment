@@ -116,4 +116,11 @@ class HtmlConditionalComment::ParserTest < Minitest::Test
       HtmlConditionalComment::Parser.new(tokens).parse()
     end
   end
+
+  def test_incorrect_comment
+    tokens = [[:open, "<!--["], [:if, "if"], [:boolean_true, "true"], [:close, "]-->"], [:open, "<!--["], [:endif, "endif"], [:close, "]-->"]]
+    assert_raises HtmlConditionalComment::ParseError do
+      HtmlConditionalComment::Parser.new(tokens).parse()
+    end
+  end
 end

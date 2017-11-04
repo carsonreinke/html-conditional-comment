@@ -24,9 +24,10 @@ module HtmlConditionalComment
     IF_STATEMENT = /if/i
     ENDIF_STATEMENT = /endif/i
     #Opening statement plus positive look ahead to avoid conflicts with other
-    #comments
-    OPEN = /<!(\-\-)?\s*\[(?=(end)?if)/
-    CLOSE = /\]\s*(\-\-)?>/
+    #comments, could also have additional comments before "if"
+    OPEN = /<!(\-\-)?[^>]*?\[(?=(end)?if)/
+    #Closing statement with additional comments after "endif"
+    CLOSE = /\].*?(\-\-)?>/
     WHITE_SPACE = /\s+/
     FEATURE = /[a-z]+/i
     VERSION_VECTOR = /\d+(\.[\d]+)?/
