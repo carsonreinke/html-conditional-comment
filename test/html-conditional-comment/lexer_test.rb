@@ -50,9 +50,7 @@ class HtmlConditionalComment::LexerTest < Minitest::Test
 
   def test_token_error
     assert_raises HtmlConditionalComment::TokenError do
-      tokens =
-        HtmlConditionalComment::Lexer.new('<!--[if IE < 5.5]><![endif]-->').
-        tokenize()
+      HtmlConditionalComment::Lexer.new('<!--[if IE < 5.5]><![endif]-->').tokenize()
     end
   end
 

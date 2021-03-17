@@ -1,3 +1,5 @@
+require 'strscan'
+
 module HtmlConditionalComment
   class TokenError < StandardError
     def initialize(rest)

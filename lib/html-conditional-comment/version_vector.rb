@@ -8,6 +8,7 @@ module HtmlConditionalComment
     attr_accessor :string
 
     def initialize(string)
+      @string = nil
       @string = string.to_s() unless string.nil?()
     end
 
